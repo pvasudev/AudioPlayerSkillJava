@@ -3,9 +3,13 @@ package net.paavan.audioplayerskill;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.speechlet.*;
 import com.amazon.speech.speechlet.interfaces.audioplayer.AudioItem;
+import com.amazon.speech.speechlet.interfaces.audioplayer.AudioPlayer;
 import com.amazon.speech.speechlet.interfaces.audioplayer.PlayBehavior;
 import com.amazon.speech.speechlet.interfaces.audioplayer.Stream;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.PlayDirective;
+import com.amazon.speech.speechlet.interfaces.audioplayer.directive.StopDirective;
+import com.amazon.speech.speechlet.interfaces.audioplayer.request.*;
+import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -17,51 +21,76 @@ import java.util.List;
 import java.util.Random;
 
 @Slf4j
-public class AudioPlayerSpeechlet implements SpeechletV2 {
+public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     private static final ObjectMapper MAPPER = new ObjectMapper() {{
         configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }};
 
-    public static void main(String[] args) throws IOException {
-        System.out.println("Test");
-        System.out.println(new FileReaderD().readFile());
+    @Override
+    public void onSessionStarted(final SpeechletRequestEnvelope<SessionStartedRequest> requestEnvelope) {
+        logSpeechletReqeust("onSessionStarted", requestEnvelope);
     }
 
     @Override
-    public void onSessionStarted(SpeechletRequestEnvelope<SessionStartedRequest> requestEnvelope) {
-        logSpeechletReqeust(requestEnvelope);
-        log.debug("onSessionStarted");
+    public SpeechletResponse onLaunch(final SpeechletRequestEnvelope<LaunchRequest> requestEnvelope) {
+        logSpeechletReqeust("onLaunch", requestEnvelope);
+        // TODO: Context is not being passed as expected. File a bug on the team and revisit the previousToken.
+        return playMusicFile(getRandomMusicFileToPlay(), requestEnvelope.getSession().isNew(), null);
     }
 
     @Override
-    public SpeechletResponse onLaunch(SpeechletRequestEnvelope<LaunchRequest> requestEnvelope) {
-        logSpeechletReqeust(requestEnvelope);
-        return playRandomMusicFromFile();
-    }
+    public SpeechletResponse onIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+        logSpeechletReqeust("onIntent", requestEnvelope);
 
-    @Override
-    public SpeechletResponse onIntent(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
-        logSpeechletReqeust(requestEnvelope);
-        return playRandomMusicFromFile();
-    }
-
-    @Override
-    public void onSessionEnded(SpeechletRequestEnvelope<SessionEndedRequest> requestEnvelope) {
-        logSpeechletReqeust(requestEnvelope);
-    }
-
-    private SpeechletResponse playRandomMusicFromFile() {
-        List<String> files = null;
-        try {
-            files = new FileReaderD().readFile();
-        } catch (IOException e) {
-            log.error("Failed to read file", e);
+        switch(requestEnvelope.getRequest().getIntent().getName()) {
+            case "AMAZON.PauseIntent":
+                return stopPlayback();
+            case "AMAZON.NextIntent":
+            default:
+                // TODO: Context is not being passed as expected. File a bug on the team and revisit the previousToken.
+                return playMusicFile(getRandomMusicFileToPlay(), requestEnvelope.getSession().isNew(), null);
         }
+    }
 
-        int randomIndex = new Random().nextInt(files.size());
-        Stream stream = new Stream();
-        String randomFile = files.get(randomIndex);
+    @Override
+    public void onSessionEnded(final SpeechletRequestEnvelope<SessionEndedRequest> requestEnvelope) {
+        logSpeechletReqeust("onSessionEnded", requestEnvelope);
+    }
+
+    @Override
+    public SpeechletResponse onPlaybackFailed(final SpeechletRequestEnvelope<PlaybackFailedRequest> requestEnvelope) {
+        logSpeechletReqeust("onPlaybackFailed", requestEnvelope);
+        return null;
+    }
+
+    @Override
+    public SpeechletResponse onPlaybackFinished(final SpeechletRequestEnvelope<PlaybackFinishedRequest> requestEnvelope) {
+        logSpeechletReqeust("onPlaybackFinished", requestEnvelope);
+        return null;
+    }
+
+    @Override
+    public SpeechletResponse onPlaybackNearlyFinished(final SpeechletRequestEnvelope<PlaybackNearlyFinishedRequest> requestEnvelope) {
+        logSpeechletReqeust("onPlaybackNearlyFinished", requestEnvelope);
+        return playMusicFile(getRandomMusicFileToPlay(), false, requestEnvelope.getRequest().getToken());
+    }
+
+    @Override
+    public SpeechletResponse onPlaybackStarted(final SpeechletRequestEnvelope<PlaybackStartedRequest> requestEnvelope) {
+        logSpeechletReqeust("onPlaybackStarted", requestEnvelope);
+        return null;
+    }
+
+    @Override
+    public SpeechletResponse onPlaybackStopped(final SpeechletRequestEnvelope<PlaybackStoppedRequest> requestEnvelope) {
+        logSpeechletReqeust("onPlaybackStopped", requestEnvelope);
+        return null;
+    }
+
+    private SpeechletResponse playMusicFile(final String randomFile, final boolean isNewSession, String previousToken) {
         log.info("Playing file: " + randomFile);
+
+        Stream stream = new Stream();
         stream.setUrl(randomFile);
         stream.setToken(randomFile);
         AudioItem audioItem = new AudioItem();
@@ -69,20 +98,46 @@ public class AudioPlayerSpeechlet implements SpeechletV2 {
 
         PlayDirective playDirective = new PlayDirective();
         playDirective.setAudioItem(audioItem);
-        playDirective.setPlayBehavior(PlayBehavior.REPLACE_ALL);
+        playDirective.setPlayBehavior(isNewSession ? PlayBehavior.REPLACE_ALL : PlayBehavior.ENQUEUE);
+        if (!isNewSession) {
+            // TODO: Why is it working when previous token is empty string?
+            stream.setExpectedPreviousToken(previousToken);
+        }
 
         SpeechletResponse response = new SpeechletResponse();
         response.setDirectives(Arrays.asList(playDirective));
+        response.setShouldEndSession(true);
 
         return response;
     }
 
-    private void logSpeechletReqeust(final SpeechletRequestEnvelope<?> requestEnvelope) {
+    private String getRandomMusicFileToPlay() {
+        List<String> files = null;
         try {
-            log.info("SpeechletRequestEnvelope: " +
+            files = new PlainTextMultilineFileReader().readFileLinesAsList();
+        } catch (IOException e) {
+            log.error("Failed to read file", e);
+        }
+
+        int randomIndex = new Random().nextInt(files.size());
+        return files.get(randomIndex);
+    }
+
+    private SpeechletResponse stopPlayback() {
+        StopDirective stopDirective = new StopDirective();
+
+        SpeechletResponse response = new SpeechletResponse();
+        response.setDirectives(Arrays.asList(stopDirective));
+
+        return response;
+    }
+
+    private void logSpeechletReqeust(final String tag, final SpeechletRequestEnvelope<?> requestEnvelope) {
+        try {
+            log.info(tag + " SpeechletRequestEnvelope: " +
                     MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(requestEnvelope));
         } catch (JsonProcessingException e) {
-            log.error("Error serializing speechlet requset", e);
+            log.error("Error serializing speechlet request", e);
         }
     }
 }

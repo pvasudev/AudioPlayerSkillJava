@@ -2,10 +2,11 @@ package net.paavan.audioplayerskill;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class FileReaderD {
-    public List<String> readFile() throws IOException {
+public class PlainTextMultilineFileReader {
+    public List<String> readFileLinesAsList() throws IOException {
         List<String> fileLines = new ArrayList<>();
 
         ClassLoader classLoader = getClass().getClassLoader();
@@ -13,12 +14,11 @@ public class FileReaderD {
 
         try(BufferedReader br = new BufferedReader(new FileReader(file))) {
             for(String line; (line = br.readLine()) != null; ) {
-                // process the line.
                 fileLines.add(line);
             }
-            // line is not visible here.
         }
 
         return fileLines;
+//        return Arrays.asList("https://dl.dropboxusercontent.com/u/518062/%5BNew%20Songs%5D/NewSongs/John_Wesley_Coleman_-_07_-_Tequila_10_Seconds.mp3");
     }
 }
