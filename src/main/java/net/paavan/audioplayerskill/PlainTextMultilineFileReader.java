@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlainTextMultilineFileReader {
-    public List<String> readFileLinesAsList() throws IOException {
+    public List<String> readFileLinesAsList(final String bundledFileName) throws IOException {
         List<String> fileLines = new ArrayList<>();
 
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("dropboxNewSongs.txt").getFile());
+        File file = new File(classLoader.getResource(bundledFileName).getFile());
 
         try(BufferedReader br = new BufferedReader(new FileReader(file))) {
             for(String line; (line = br.readLine()) != null; ) {

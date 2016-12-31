@@ -1,0 +1,108 @@
+package net.paavan.audioplayerskill.event;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class SpeechletEventManager implements SpeechletEventListener {
+    private final List<SpeechletEventListener> speechletEventListeners;
+
+    public SpeechletEventManager() {
+        speechletEventListeners = new ArrayList<>();
+    }
+
+    public void registerSpeechletEventListener(final SpeechletEventListener... speechletEventListeners) {
+        this.speechletEventListeners.addAll(Arrays.asList(speechletEventListeners));
+    }
+
+    @Override
+    public void onLaunch() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onLaunch();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onPause();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onResume();
+        }
+    }
+
+    @Override
+    public void onCancel() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onCancel();
+        }
+    }
+
+    @Override
+    public void onPrevious() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onPrevious();
+        }
+    }
+
+    @Override
+    public void onNext() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onNext();
+        }
+    }
+
+    @Override
+    public void onRepeat() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onRepeat();
+        }
+    }
+
+    @Override
+    public void onStartOver() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onStartOver();
+        }
+    }
+
+    @Override
+    public void onPlaybackNearlyFinished(String token) {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onPlaybackNearlyFinished(token);
+        }
+    }
+
+    @Override
+    public void onLoopOn() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onLoopOn();
+        }
+    }
+
+    @Override
+    public void onLoopOff() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onLoopOff();
+        }
+    }
+
+    @Override
+    public void onShuffleOn() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onShuffleOn();
+        }
+    }
+
+    @Override
+    public void onShuffleOff() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onShuffleOff();
+        }
+    }
+}

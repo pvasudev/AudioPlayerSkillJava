@@ -1,0 +1,17 @@
+package net.paavan.audioplayerskill.event;
+
+public abstract class AbstractSpeechletEventListener implements SpeechletEventListener {
+    @Override public void onLaunch() {}
+    @Override public void onPause() {}
+    @Override public void onResume() {}
+    @Override public void onCancel() {}
+    @Override public void onPrevious() {}
+    @Override public void onNext() {}
+    @Override public void onRepeat() {}
+    @Override public void onStartOver() {}
+    @Override public void onLoopOn() {}
+    @Override public void onLoopOff() {}
+    @Override public void onShuffleOn() {}
+    @Override public void onShuffleOff() {}
+    @Override public void onPlaybackNearlyFinished(final String token) {}
+}
