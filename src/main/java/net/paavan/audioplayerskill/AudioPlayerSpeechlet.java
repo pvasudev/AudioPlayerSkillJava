@@ -9,14 +9,13 @@ import com.amazon.speech.speechlet.interfaces.audioplayer.Stream;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.PlayDirective;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.StopDirective;
 import com.amazon.speech.speechlet.interfaces.audioplayer.request.*;
-import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -105,7 +104,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         }
 
         SpeechletResponse response = new SpeechletResponse();
-        response.setDirectives(Arrays.asList(playDirective));
+        response.setDirectives(Collections.singletonList(playDirective));
         response.setShouldEndSession(true);
 
         return response;
@@ -127,7 +126,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         StopDirective stopDirective = new StopDirective();
 
         SpeechletResponse response = new SpeechletResponse();
-        response.setDirectives(Arrays.asList(stopDirective));
+        response.setDirectives(Collections.singletonList(stopDirective));
 
         return response;
     }
