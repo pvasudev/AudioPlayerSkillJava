@@ -44,7 +44,10 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         switch(requestEnvelope.getRequest().getIntent().getName()) {
             case "AMAZON.PauseIntent":
                 return stopPlayback();
+            case "AMAZON.ResumeIntent":
             case "AMAZON.NextIntent":
+            case "AMAZON.PreviousIntent": // Clearly the wrong thing to do, but cannot do anything else without the context.
+            case "AMAZON.StartOverIntent":
             default:
                 // TODO: Context is not being passed as expected. File a bug on the team and revisit the previousToken.
                 return playMusicFile(getRandomMusicFileToPlay(), requestEnvelope.getSession().isNew(), null);
