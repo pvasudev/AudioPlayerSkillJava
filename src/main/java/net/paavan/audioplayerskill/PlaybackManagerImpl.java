@@ -19,7 +19,7 @@ public class PlaybackManagerImpl implements PlaybackManager {
     private volatile Optional<String> currentlyPlayingToken;
     private volatile boolean shouldReplaceCurrentlyPlaying;
 
-    public PlaybackManagerImpl(SpeechletEventManager speechletEventManager, MusicSourceManager musicSourceManager) {
+    public PlaybackManagerImpl(final SpeechletEventManager speechletEventManager, final MusicSourceManager musicSourceManager) {
         this.musicSourceManager = musicSourceManager;
         listener = new PlaybackManagerSpeechletEventListener();
         speechletEventManager.registerSpeechletEventListener(listener);

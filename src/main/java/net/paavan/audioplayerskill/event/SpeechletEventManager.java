@@ -72,7 +72,7 @@ public class SpeechletEventManager implements SpeechletEventListener {
     }
 
     @Override
-    public void onPlaybackNearlyFinished(String token) {
+    public void onPlaybackNearlyFinished(final String token) {
         for (SpeechletEventListener listener : speechletEventListeners) {
             listener.onPlaybackNearlyFinished(token);
         }

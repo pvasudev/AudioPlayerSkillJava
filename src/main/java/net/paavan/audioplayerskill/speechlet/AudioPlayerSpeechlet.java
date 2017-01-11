@@ -35,7 +35,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     private final PlaybackManager playbackManager;
     private final SpeechletEventListener speechletEventManager;
 
-    public AudioPlayerSpeechlet(PlaybackManager playbackManager, SpeechletEventManager speechletEventManager) {
+    public AudioPlayerSpeechlet(final PlaybackManager playbackManager, final SpeechletEventManager speechletEventManager) {
         this.playbackManager = playbackManager;
         this.speechletEventManager = speechletEventManager;
     }
