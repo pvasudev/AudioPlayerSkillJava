@@ -1,6 +1,7 @@
 package net.paavan.audioplayerskill.speechlet;
 
 import com.amazon.speech.json.SpeechletRequestEnvelope;
+import com.amazon.speech.json.SpeechletRequestModule;
 import com.amazon.speech.speechlet.*;
 import com.amazon.speech.speechlet.interfaces.audioplayer.AudioItem;
 import com.amazon.speech.speechlet.interfaces.audioplayer.AudioPlayer;
@@ -10,6 +11,7 @@ import com.amazon.speech.speechlet.interfaces.audioplayer.directive.StopDirectiv
 import com.amazon.speech.speechlet.interfaces.audioplayer.request.*;
 import com.amazon.speech.ui.SimpleCard;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,10 @@ import java.util.Collections;
 public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     private static final ObjectMapper MAPPER = new ObjectMapper() {{
         configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        // For context object
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
+        registerModule(new SpeechletRequestModule());
     }};
 
     private final PlaybackManager playbackManager;
@@ -78,8 +84,6 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         SpeechletResponse response = new SpeechletResponse();
         response.setShouldEndSession(true);
 
-        // TODO: Context is not being passed as expected. File a bug on the team and revisit the previousToken.
-
         if (playbackResponse.getNextToken().isPresent()) {
             String url = playbackResponse.getNextToken().get();
             Stream stream = new Stream();
@@ -92,7 +96,6 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
             playDirective.setAudioItem(audioItem);
             playDirective.setPlayBehavior(playbackResponse.getPlayBehavior().get());
             if (playbackResponse.getExpectedToken().isPresent()) {
-                // TODO: Why is it working when previous token is empty string?
                 stream.setExpectedPreviousToken(playbackResponse.getExpectedToken().get());
             }
 
