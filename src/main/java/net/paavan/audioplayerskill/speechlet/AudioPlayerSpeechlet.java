@@ -157,9 +157,22 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         }
     }
 
-    private static String getDisplayableSongPlayed(String token) {
-        String[] parts = token.split("/");
-        String lastPart = parts[parts.length - 1];
-        return URLDecoder.decode(lastPart);
+    /**
+     * An hacky method to etch out displayable name from the song URL.
+     *
+     * @param url the url of the song
+     * @return displayable name
+     */
+    private static String getDisplayableSongPlayed(final String url) {
+        String[] parts = url.split("/");
+        String title = URLDecoder.decode(parts[parts.length - 1]);
+        if (title.lastIndexOf(".mp3") != -1) {
+            title = title.substring(0, title.lastIndexOf(".mp3"));
+        }
+        if (title.lastIndexOf(" @ Fmw11.com") != -1) {
+            title = title.substring(0, title.lastIndexOf(" @ Fmw11.com"));
+        }
+
+        return title;
     }
 }
