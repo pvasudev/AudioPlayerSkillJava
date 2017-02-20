@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Slf4j
 public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
-    private static final String NOW_PLAYING_DO_NOT_KNOW_MESSAGE = "Audio Player isn't playing anything!";
+    private static final String NOW_PLAYING_DO_NOT_KNOW_MESSAGE = "The context was empty, so Audio Player isn't playing anything!";
 
     private static final ObjectMapper MAPPER = new ObjectMapper() {{
         configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -184,9 +184,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
 
         if (requestEnvelope.getContext().hasState(AudioPlayerInterface.class)) {
             AudioPlayerState audioPlayerState = requestEnvelope.getContext().getState(AudioPlayerInterface.class, AudioPlayerState.class);
-            if (audioPlayerState.getPlayerActivity() == PlayerActivity.PLAYING) {
-                currentlyPlaying = Optional.ofNullable(audioPlayerState.getToken());
-            }
+            currentlyPlaying = Optional.ofNullable(audioPlayerState.getToken());
         }
         return currentlyPlaying;
     }
