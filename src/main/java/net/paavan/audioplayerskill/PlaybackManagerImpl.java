@@ -53,7 +53,7 @@ public class PlaybackManagerImpl implements PlaybackManager {
     }
 
     /**
-     * Speechlet Event Listener for Playback Manager
+     * Speechlet Event Listener for Playback Manager.
      */
     private class PlaybackManagerSpeechletEventListener extends AbstractSpeechletEventListener {
         @Override

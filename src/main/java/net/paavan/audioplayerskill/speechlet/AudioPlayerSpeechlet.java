@@ -9,6 +9,7 @@ import com.amazon.speech.speechlet.interfaces.audioplayer.Stream;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.PlayDirective;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.StopDirective;
 import com.amazon.speech.speechlet.interfaces.audioplayer.request.*;
+import com.amazon.speech.ui.Card;
 import com.amazon.speech.ui.SimpleCard;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -100,11 +101,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
             }
 
             response.setDirectives(Collections.singletonList(playDirective));
-
-            SimpleCard card = new SimpleCard();
-            card.setTitle("Next Song");
-            card.setContent(getDisplayableSongPlayed(url));
-//        response.setCard(card);
+//            response.setCard(getCard(url));
         } else {
             response.setDirectives(Collections.singletonList(new StopDirective()));
         }
@@ -120,7 +117,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     @Override
     public SpeechletResponse onPlaybackFailed(final SpeechletRequestEnvelope<PlaybackFailedRequest> requestEnvelope) {
         logSpeechletReqeust("onPlaybackFailed", requestEnvelope);
-        return null;
+        return getSpeechletResponse(playbackManager.getNextPlaybackResponse());
     }
 
     @Override
@@ -155,6 +152,19 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         } catch (JsonProcessingException e) {
             log.error("Error serializing speechlet request", e);
         }
+    }
+
+    /**
+     * Creates a {@link SimpleCard} using the URL string to produce a displayable song title.
+     *
+     * @param url the url of the song
+     * @return a simple card
+     */
+    private Card getCard(String url) {
+        SimpleCard card = new SimpleCard();
+        card.setTitle("Next Song");
+        card.setContent(getDisplayableSongPlayed(url));
+        return card;
     }
 
     /**
