@@ -3,13 +3,12 @@ package net.paavan.audioplayerskill.speechlet;
 import com.amazon.speech.json.SpeechletRequestEnvelope;
 import com.amazon.speech.json.SpeechletRequestModule;
 import com.amazon.speech.speechlet.*;
-import com.amazon.speech.speechlet.interfaces.audioplayer.AudioItem;
-import com.amazon.speech.speechlet.interfaces.audioplayer.AudioPlayer;
-import com.amazon.speech.speechlet.interfaces.audioplayer.Stream;
+import com.amazon.speech.speechlet.interfaces.audioplayer.*;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.PlayDirective;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.StopDirective;
 import com.amazon.speech.speechlet.interfaces.audioplayer.request.*;
 import com.amazon.speech.ui.Card;
+import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.SimpleCard;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -22,9 +21,12 @@ import net.paavan.audioplayerskill.event.SpeechletEventManager;
 
 import java.net.URLDecoder;
 import java.util.Collections;
+import java.util.Optional;
 
 @Slf4j
 public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
+    private static final String NOW_PLAYING_DO_NOT_KNOW_MESSAGE = "The context was empty, so Audio Player isn't playing anything!";
+
     private static final ObjectMapper MAPPER = new ObjectMapper() {{
         configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         // For context object
@@ -74,6 +76,8 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
             case "AMAZON.StartOverIntent":
                 speechletEventManager.onStartOver();
                 break;
+            case "NowPlayingIntent":
+                return getNowPlayingResponse(requestEnvelope);
             default:
                 break;
         }
@@ -152,6 +156,37 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         } catch (JsonProcessingException e) {
             log.error("Error serializing speechlet request", e);
         }
+    }
+
+    /**
+     * Creates and returns the response to {@code NowPlayingIntent}. Constructs a message using the <i>currently playing</i> token from
+     * {@link AudioPlayerState} if present, or the {@link #NOW_PLAYING_DO_NOT_KNOW_MESSAGE} otherwise.
+     *
+     * @param requestEnvelope the intent request envelope
+     * @return response to {@code NowPlayingIntent}
+     */
+    private SpeechletResponse getNowPlayingResponse(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+        Optional<String> currentlyPlaying = getCurrentlyPlayingToken(requestEnvelope);
+        String message = currentlyPlaying.isPresent() ? getDisplayableSongPlayed(currentlyPlaying.get()) : NOW_PLAYING_DO_NOT_KNOW_MESSAGE;
+        PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+        speech.setText(message);
+        return SpeechletResponse.newTellResponse(speech);
+    }
+
+    /**
+     * Returns the currently playing token from {@link Context} if present, empty optional otherwise.
+     *
+     * @param requestEnvelope the intent request envelope
+     * @return the currently playing token from {@link Context} if present, empty optional otherwise
+     */
+    private Optional<String> getCurrentlyPlayingToken(SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
+        Optional<String> currentlyPlaying = Optional.empty();
+
+        if (requestEnvelope.getContext().hasState(AudioPlayerInterface.class)) {
+            AudioPlayerState audioPlayerState = requestEnvelope.getContext().getState(AudioPlayerInterface.class, AudioPlayerState.class);
+            currentlyPlaying = Optional.ofNullable(audioPlayerState.getToken());
+        }
+        return currentlyPlaying;
     }
 
     /**
