@@ -26,6 +26,8 @@ import java.util.Optional;
 @Slf4j
 public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     private static final String NOW_PLAYING_DO_NOT_KNOW_MESSAGE = "The context was empty, so Audio Player isn't playing anything!";
+    private static final String NOW_PLAYING_TITLE = "Currently Playing";
+    private static final String NOW_PLAYING_CARD_URL_DELIMITER = "\n\nfrom the URL\n\n";
 
     private static final ObjectMapper MAPPER = new ObjectMapper() {{
         configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -159,18 +161,33 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     }
 
     /**
-     * Creates and returns the response to {@code NowPlayingIntent}. Constructs a message using the <i>currently playing</i> token from
-     * {@link AudioPlayerState} if present, or the {@link #NOW_PLAYING_DO_NOT_KNOW_MESSAGE} otherwise.
+     * Creates and returns the response to {@code NowPlayingIntent}. Constructs an OutputSpeech message & a simple card using the
+     * <i>currently playing</i> token from {@link AudioPlayerState} if present, or the {@link #NOW_PLAYING_DO_NOT_KNOW_MESSAGE} otherwise.
      *
      * @param requestEnvelope the intent request envelope
      * @return response to {@code NowPlayingIntent}
      */
     private SpeechletResponse getNowPlayingResponse(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
         Optional<String> currentlyPlaying = getCurrentlyPlayingToken(requestEnvelope);
-        String message = currentlyPlaying.isPresent() ? getDisplayableSongPlayed(currentlyPlaying.get()) : NOW_PLAYING_DO_NOT_KNOW_MESSAGE;
         PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+        Optional<SimpleCard> card = Optional.empty();
+        String message;
+
+        if (currentlyPlaying.isPresent()) {
+            message = getDisplayableSongPlayed(currentlyPlaying.get());
+            card = Optional.of(new SimpleCard());
+            card.get().setTitle(NOW_PLAYING_TITLE);
+            card.get().setContent(new StringBuilder()
+                    .append(message)
+                    .append(NOW_PLAYING_CARD_URL_DELIMITER)
+                    .append(currentlyPlaying.get())
+                    .toString());
+        } else {
+            message = NOW_PLAYING_DO_NOT_KNOW_MESSAGE;
+        }
+
         speech.setText(message);
-        return SpeechletResponse.newTellResponse(speech);
+        return card.isPresent() ? SpeechletResponse.newTellResponse(speech, card.get()) : SpeechletResponse.newTellResponse(speech);
     }
 
     /**
