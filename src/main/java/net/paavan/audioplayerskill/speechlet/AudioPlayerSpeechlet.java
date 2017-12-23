@@ -47,19 +47,19 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
 
     @Override
     public void onSessionStarted(final SpeechletRequestEnvelope<SessionStartedRequest> requestEnvelope) {
-        logSpeechletReqeust("onSessionStarted", requestEnvelope);
+        logSpeechletRequest("onSessionStarted", requestEnvelope);
     }
 
     @Override
     public SpeechletResponse onLaunch(final SpeechletRequestEnvelope<LaunchRequest> requestEnvelope) {
-        logSpeechletReqeust("onLaunch", requestEnvelope);
+        logSpeechletRequest("onLaunch", requestEnvelope);
         speechletEventManager.onLaunch();
         return getSpeechletResponse(playbackManager.getNextPlaybackResponse());
     }
 
     @Override
     public SpeechletResponse onIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
-        logSpeechletReqeust("onIntent", requestEnvelope);
+        logSpeechletRequest("onIntent", requestEnvelope);
 
         // TODO: Clean this up
         switch(requestEnvelope.getRequest().getIntent().getName()) {
@@ -112,51 +112,60 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
             response.setDirectives(Collections.singletonList(new StopDirective()));
         }
 
+        logSpeechletResponse(response);
+
         return response;
     }
 
     @Override
     public void onSessionEnded(final SpeechletRequestEnvelope<SessionEndedRequest> requestEnvelope) {
-        logSpeechletReqeust("onSessionEnded", requestEnvelope);
+        logSpeechletRequest("onSessionEnded", requestEnvelope);
     }
 
     @Override
     public SpeechletResponse onPlaybackFailed(final SpeechletRequestEnvelope<PlaybackFailedRequest> requestEnvelope) {
-        logSpeechletReqeust("onPlaybackFailed", requestEnvelope);
+        logSpeechletRequest("onPlaybackFailed", requestEnvelope);
         return getSpeechletResponse(playbackManager.getNextPlaybackResponse());
     }
 
     @Override
     public SpeechletResponse onPlaybackFinished(final SpeechletRequestEnvelope<PlaybackFinishedRequest> requestEnvelope) {
-        logSpeechletReqeust("onPlaybackFinished", requestEnvelope);
+        logSpeechletRequest("onPlaybackFinished", requestEnvelope);
         return null;
     }
 
     @Override
     public SpeechletResponse onPlaybackNearlyFinished(final SpeechletRequestEnvelope<PlaybackNearlyFinishedRequest> requestEnvelope) {
-        logSpeechletReqeust("onPlaybackNearlyFinished", requestEnvelope);
+        logSpeechletRequest("onPlaybackNearlyFinished", requestEnvelope);
         speechletEventManager.onPlaybackNearlyFinished(requestEnvelope.getRequest().getToken());
         return getSpeechletResponse(playbackManager.getNextPlaybackResponse());
     }
 
     @Override
     public SpeechletResponse onPlaybackStarted(final SpeechletRequestEnvelope<PlaybackStartedRequest> requestEnvelope) {
-        logSpeechletReqeust("onPlaybackStarted", requestEnvelope);
+        logSpeechletRequest("onPlaybackStarted", requestEnvelope);
         return null;
     }
 
     @Override
     public SpeechletResponse onPlaybackStopped(final SpeechletRequestEnvelope<PlaybackStoppedRequest> requestEnvelope) {
-        logSpeechletReqeust("onPlaybackStopped", requestEnvelope);
+        logSpeechletRequest("onPlaybackStopped", requestEnvelope);
         return null;
     }
 
-    private void logSpeechletReqeust(final String tag, final SpeechletRequestEnvelope<?> requestEnvelope) {
+    private void logSpeechletRequest(final String tag, final SpeechletRequestEnvelope<?> requestEnvelope) {
         try {
-            log.info(tag + " SpeechletRequestEnvelope: " +
-                    MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(requestEnvelope));
-        } catch (JsonProcessingException e) {
+            log.info(tag + " SpeechletRequestEnvelope: " + MAPPER.writeValueAsString(requestEnvelope));
+        } catch (final JsonProcessingException e) {
             log.error("Error serializing speechlet request", e);
+        }
+    }
+
+    private void logSpeechletResponse(final SpeechletResponse response) {
+        try {
+            log.info("SpeechletResponse: " + MAPPER.writeValueAsString(response));
+        } catch (final JsonProcessingException e) {
+            log.error("Error serializing speechlet response", e);
         }
     }
 
@@ -187,7 +196,10 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         }
 
         speech.setText(message);
-        return card.isPresent() ? SpeechletResponse.newTellResponse(speech, card.get()) : SpeechletResponse.newTellResponse(speech);
+        SpeechletResponse response = card.isPresent() ? SpeechletResponse.newTellResponse(speech, card.get()) :
+                SpeechletResponse.newTellResponse(speech);
+        logSpeechletResponse(response);
+        return response;
     }
 
     /**
