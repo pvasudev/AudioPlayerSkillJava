@@ -4,8 +4,8 @@ import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
 import net.paavan.audioplayerskill.PlaybackManager;
 import net.paavan.audioplayerskill.PlaybackManagerImpl;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
+import net.paavan.audioplayerskill.source.AllS3SongsMusicSource;
 import net.paavan.audioplayerskill.source.MusicSourceManager;
-import net.paavan.audioplayerskill.source.NewSongsMusicSource;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,8 +16,7 @@ public class AudioPlayerSpeechletRequestStreamHandler extends SpeechletRequestSt
     }};
 
     private static final MusicSourceManager MUSIC_SOURCE_MANAGER = new MusicSourceManager() {{
-        NewSongsMusicSource newSongsMusicSource = new NewSongsMusicSource();
-        registerMusicSource(newSongsMusicSource);
+        registerMusicSource(new AllS3SongsMusicSource());
     }};
 
     private static final SpeechletEventManager SPEECHLET_EVENT_MANAGER = new SpeechletEventManager();
