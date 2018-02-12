@@ -1,6 +1,7 @@
 package net.paavan.audioplayerskill.speechlet;
 
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
+import com.amazon.speech.speechlet.services.DirectiveServiceClient;
 import net.paavan.audioplayerskill.PlaybackManager;
 import net.paavan.audioplayerskill.PlaybackManagerImpl;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
@@ -23,6 +24,7 @@ public class AudioPlayerSpeechletRequestStreamHandler extends SpeechletRequestSt
     private static final PlaybackManager PLAYBACK_MANAGER = new PlaybackManagerImpl(SPEECHLET_EVENT_MANAGER, MUSIC_SOURCE_MANAGER);
 
     public AudioPlayerSpeechletRequestStreamHandler() {
-        super(new AudioPlayerSpeechlet(PLAYBACK_MANAGER, SPEECHLET_EVENT_MANAGER), SUPPORTED_APPLICATION_IDS);
+        super(new AudioPlayerSpeechlet(PLAYBACK_MANAGER, SPEECHLET_EVENT_MANAGER, new DirectiveServiceClient()),
+                SUPPORTED_APPLICATION_IDS);
     }
 }

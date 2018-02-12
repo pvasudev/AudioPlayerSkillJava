@@ -7,6 +7,12 @@ import com.amazon.speech.speechlet.interfaces.audioplayer.*;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.PlayDirective;
 import com.amazon.speech.speechlet.interfaces.audioplayer.directive.StopDirective;
 import com.amazon.speech.speechlet.interfaces.audioplayer.request.*;
+import com.amazon.speech.speechlet.interfaces.system.SystemInterface;
+import com.amazon.speech.speechlet.interfaces.system.SystemState;
+import com.amazon.speech.speechlet.services.DirectiveEnvelope;
+import com.amazon.speech.speechlet.services.DirectiveEnvelopeHeader;
+import com.amazon.speech.speechlet.services.DirectiveService;
+import com.amazon.speech.speechlet.services.SpeakDirective;
 import com.amazon.speech.ui.Card;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.SimpleCard;
@@ -28,6 +34,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     private static final String NOW_PLAYING_DO_NOT_KNOW_MESSAGE = "The context was empty, so Audio Player isn't playing anything!";
     private static final String NOW_PLAYING_TITLE = "Currently Playing";
     private static final String NOW_PLAYING_CARD_URL_DELIMITER = "\n\nfrom the URL\n\n";
+    private static final String SKILL_WELCOME_RESPONSE = "Welcome to Audio Player!";
 
     private static final ObjectMapper MAPPER = new ObjectMapper() {{
         configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -39,10 +46,13 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
 
     private final PlaybackManager playbackManager;
     private final SpeechletEventListener speechletEventManager;
+    private final DirectiveService directiveService;
 
-    public AudioPlayerSpeechlet(final PlaybackManager playbackManager, final SpeechletEventManager speechletEventManager) {
+    public AudioPlayerSpeechlet(final PlaybackManager playbackManager, final SpeechletEventManager speechletEventManager,
+                                final DirectiveService directiveService) {
         this.playbackManager = playbackManager;
         this.speechletEventManager = speechletEventManager;
+        this.directiveService = directiveService;
     }
 
     @Override
@@ -54,12 +64,16 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     public SpeechletResponse onLaunch(final SpeechletRequestEnvelope<LaunchRequest> requestEnvelope) {
         logSpeechletRequest("onLaunch", requestEnvelope);
         speechletEventManager.onLaunch();
+        dispatchProgressiveResponse(requestEnvelope.getRequest().getRequestId(), SKILL_WELCOME_RESPONSE,
+                requestEnvelope.getContext().getState(SystemInterface.class, SystemState.class));
         return getSpeechletResponse(playbackManager.getNextPlaybackResponse());
     }
 
     @Override
     public SpeechletResponse onIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
         logSpeechletRequest("onIntent", requestEnvelope);
+        dispatchProgressiveResponse(requestEnvelope.getRequest().getRequestId(), SKILL_WELCOME_RESPONSE,
+                requestEnvelope.getContext().getState(SystemInterface.class, SystemState.class));
 
         // TODO: Clean this up
         switch(requestEnvelope.getRequest().getIntent().getName()) {
@@ -248,5 +262,28 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
         }
 
         return title;
+    }
+
+    /**
+     * Dispatches a progressive response.
+     *
+     * @param requestId the unique request identifier
+     * @param text the speech text
+     * @param systemState the SystemState object
+     */
+    private void dispatchProgressiveResponse(final String requestId, final String text, final SystemState systemState) {
+        DirectiveEnvelopeHeader header = DirectiveEnvelopeHeader.builder().withRequestId(requestId).build();
+        SpeakDirective directive = SpeakDirective.builder().withSpeech(text).build();
+        DirectiveEnvelope directiveEnvelope = DirectiveEnvelope.builder()
+                .withHeader(header).withDirective(directive).build();
+
+        if (systemState.getApiAccessToken() != null && !systemState.getApiAccessToken().isEmpty()) {
+            String token = systemState.getApiAccessToken();
+            try {
+                directiveService.enqueue(directiveEnvelope, systemState.getApiEndpoint(), token);
+            } catch (final Exception e) {
+                log.error("Failed to dispatch a progressive response", e);
+            }
+        }
     }
 }
