@@ -72,8 +72,6 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     @Override
     public SpeechletResponse onIntent(final SpeechletRequestEnvelope<IntentRequest> requestEnvelope) {
         logSpeechletRequest("onIntent", requestEnvelope);
-        dispatchProgressiveResponse(requestEnvelope.getRequest().getRequestId(), SKILL_WELCOME_RESPONSE,
-                requestEnvelope.getContext().getState(SystemInterface.class, SystemState.class));
 
         // TODO: Clean this up
         switch(requestEnvelope.getRequest().getIntent().getName()) {
