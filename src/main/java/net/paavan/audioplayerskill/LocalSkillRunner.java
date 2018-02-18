@@ -46,7 +46,6 @@ public class LocalSkillRunner {
                         .build())
                 .build();
 
-
         InputStream inputStream = new ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(launchRequestEnvelope));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         handler.handleRequest(inputStream, outputStream, null);
