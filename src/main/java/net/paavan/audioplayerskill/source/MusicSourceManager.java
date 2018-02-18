@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class MusicSourceManager {
     private final List<MusicSource> musicSources;
     private final S3FileListReader s3FileListReader;
+    private boolean isInitialized = false;
 
     public MusicSourceManager(final S3FileListReader s3FileListReader,
                               final SpeechletEventManager speechletEventManager) {
@@ -28,6 +29,9 @@ public class MusicSourceManager {
     }
 
     public List<String> getPlayableAudioUrls() {
+        if (!isInitialized) {
+            initialize();
+        }
         return musicSources.stream()
                 .filter(MusicSource::canHandle)
                 .map(MusicSource::getAudioUrls)
@@ -47,6 +51,7 @@ public class MusicSourceManager {
                 .build();
 
         musicSources.forEach(musicSource -> musicSource.populateSourceFromS3Keys(s3Keys));
+        isInitialized = true;
     }
 
     /**
