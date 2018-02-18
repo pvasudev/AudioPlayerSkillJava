@@ -1,5 +1,7 @@
 package net.paavan.audioplayerskill.event;
 
+import net.paavan.audioplayerskill.settings.ContentAbstractionType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -103,6 +105,13 @@ public class SpeechletEventManager implements SpeechletEventListener {
     public void onShuffleOff() {
         for (SpeechletEventListener listener : speechletEventListeners) {
             listener.onShuffleOff();
+        }
+    }
+
+    @Override
+    public void onMusicSelectionIntent(final ContentAbstractionType contentAbstractionType, final String value) {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onMusicSelectionIntent(contentAbstractionType, value);
         }
     }
 }

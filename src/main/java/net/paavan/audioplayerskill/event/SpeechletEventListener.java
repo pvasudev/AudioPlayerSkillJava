@@ -1,5 +1,7 @@
 package net.paavan.audioplayerskill.event;
 
+import net.paavan.audioplayerskill.settings.ContentAbstractionType;
+
 public interface SpeechletEventListener {
     void onLaunch();
 
@@ -17,4 +19,6 @@ public interface SpeechletEventListener {
     void onLoopOff();
     void onShuffleOn();
     void onShuffleOff();
+
+    void onMusicSelectionIntent(final ContentAbstractionType contentAbstractionType, final String value);
 }

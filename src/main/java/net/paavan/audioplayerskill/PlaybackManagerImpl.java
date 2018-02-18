@@ -13,7 +13,6 @@ import java.util.Random;
 @Slf4j
 public class PlaybackManagerImpl implements PlaybackManager {
     private final MusicSourceManager musicSourceManager;
-    private final PlaybackManagerSpeechletEventListener listener;
 
     private volatile boolean shouldReturnToken;
     private volatile Optional<String> currentlyPlayingToken;
@@ -21,8 +20,7 @@ public class PlaybackManagerImpl implements PlaybackManager {
 
     public PlaybackManagerImpl(final SpeechletEventManager speechletEventManager, final MusicSourceManager musicSourceManager) {
         this.musicSourceManager = musicSourceManager;
-        listener = new PlaybackManagerSpeechletEventListener();
-        speechletEventManager.registerSpeechletEventListener(listener);
+        speechletEventManager.registerSpeechletEventListener(new PlaybackManagerSpeechletEventListener());
         currentlyPlayingToken = Optional.empty();
     }
 

@@ -5,6 +5,7 @@ import com.amazon.speech.speechlet.services.DirectiveServiceClient;
 import net.paavan.audioplayerskill.PlaybackManager;
 import net.paavan.audioplayerskill.PlaybackManagerImpl;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
+import net.paavan.audioplayerskill.settings.PlaybackSettingsManager;
 import net.paavan.audioplayerskill.source.AllS3SongsMusicSource;
 import net.paavan.audioplayerskill.source.MusicSourceManager;
 
@@ -21,10 +22,14 @@ public class AudioPlayerSpeechletRequestStreamHandler extends SpeechletRequestSt
     }};
 
     private static final SpeechletEventManager SPEECHLET_EVENT_MANAGER = new SpeechletEventManager();
-    private static final PlaybackManager PLAYBACK_MANAGER = new PlaybackManagerImpl(SPEECHLET_EVENT_MANAGER, MUSIC_SOURCE_MANAGER);
+    private static final PlaybackManager PLAYBACK_MANAGER = new PlaybackManagerImpl(SPEECHLET_EVENT_MANAGER,
+            MUSIC_SOURCE_MANAGER);
+    public static final DirectiveServiceClient DIRECTIVE_SERVICE_CLIENT = new DirectiveServiceClient();
+    private static final PlaybackSettingsManager PLAYBACK_SETTINGS_MANAGER = new PlaybackSettingsManager(
+            SPEECHLET_EVENT_MANAGER);
 
     public AudioPlayerSpeechletRequestStreamHandler() {
-        super(new AudioPlayerSpeechlet(PLAYBACK_MANAGER, SPEECHLET_EVENT_MANAGER, new DirectiveServiceClient()),
+        super(new AudioPlayerSpeechlet(PLAYBACK_MANAGER, SPEECHLET_EVENT_MANAGER, DIRECTIVE_SERVICE_CLIENT),
                 SUPPORTED_APPLICATION_IDS);
     }
 }

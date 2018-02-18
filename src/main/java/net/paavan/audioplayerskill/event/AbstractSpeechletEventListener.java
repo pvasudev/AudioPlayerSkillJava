@@ -1,5 +1,7 @@
 package net.paavan.audioplayerskill.event;
 
+import net.paavan.audioplayerskill.settings.ContentAbstractionType;
+
 public abstract class AbstractSpeechletEventListener implements SpeechletEventListener {
     @Override public void onLaunch() {}
     @Override public void onPause() {}
@@ -14,4 +16,5 @@ public abstract class AbstractSpeechletEventListener implements SpeechletEventLi
     @Override public void onShuffleOn() {}
     @Override public void onShuffleOff() {}
     @Override public void onPlaybackNearlyFinished(final String token) {}
+    @Override public void onMusicSelectionIntent(final ContentAbstractionType contentAbstractionType, final String value) {}
 }

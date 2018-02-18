@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.paavan.audioplayerskill.PlaybackManager;
 import net.paavan.audioplayerskill.event.SpeechletEventListener;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
+import net.paavan.audioplayerskill.settings.ContentAbstractionType;
 
 import java.net.URLDecoder;
 import java.util.Collections;
@@ -92,6 +93,12 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
                 break;
             case "NowPlayingIntent":
                 return getNowPlayingResponse(requestEnvelope);
+            case "PlayCokeStudioIntent":
+                speechletEventManager.onMusicSelectionIntent(ContentAbstractionType.ALBUM, "CokeStudio");
+                break;
+            case "PlayCokeStudioIndiaIntent":
+                speechletEventManager.onMusicSelectionIntent(ContentAbstractionType.ALBUM, "CokeStudioIndia");
+                break;
             default:
                 break;
         }
