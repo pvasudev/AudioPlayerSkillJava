@@ -26,6 +26,7 @@ import net.paavan.audioplayerskill.event.SpeechletEventListener;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
 import net.paavan.audioplayerskill.settings.ContentAbstractionType;
 
+import javax.inject.Inject;
 import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.Optional;
@@ -49,6 +50,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
     private final SpeechletEventListener speechletEventManager;
     private final DirectiveService directiveService;
 
+    @Inject
     public AudioPlayerSpeechlet(final PlaybackManager playbackManager, final SpeechletEventManager speechletEventManager,
                                 final DirectiveService directiveService) {
         this.playbackManager = playbackManager;
