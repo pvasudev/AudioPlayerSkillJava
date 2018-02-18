@@ -4,6 +4,7 @@ import net.paavan.audioplayerskill.settings.ContentAbstractionType;
 
 public abstract class AbstractSpeechletEventListener implements SpeechletEventListener {
     @Override public void onLaunch() {}
+    @Override public void onInitialProgressiveDispatch() {}
     @Override public void onPause() {}
     @Override public void onResume() {}
     @Override public void onCancel() {}

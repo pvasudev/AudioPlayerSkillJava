@@ -38,11 +38,11 @@ public class AudioPlayerSpeechletModule extends AbstractModule {
 
     @Provides
     @Singleton
-    MusicSourceManager getMusicSourceManager(final S3FileListReader s3FileListReader) {
-        MusicSourceManager musicSourceManager = new MusicSourceManager(s3FileListReader);
+    MusicSourceManager getMusicSourceManager(final S3FileListReader s3FileListReader,
+                                             final SpeechletEventManager speechletEventManager) {
+        MusicSourceManager musicSourceManager = new MusicSourceManager(s3FileListReader, speechletEventManager);
         musicSourceManager.registerMusicSource(new CokeStudioMusicSource());
         musicSourceManager.registerMusicSource(new CokeStudioIndiaMusicSource());
-        musicSourceManager.initialize();
         return musicSourceManager;
     }
 

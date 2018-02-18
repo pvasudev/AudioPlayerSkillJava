@@ -18,6 +18,13 @@ public class SpeechletEventManager implements SpeechletEventListener {
     }
 
     @Override
+    public void onInitialProgressiveDispatch() {
+        for (SpeechletEventListener listener : speechletEventListeners) {
+            listener.onInitialProgressiveDispatch();
+        }
+    }
+
+    @Override
     public void onLaunch() {
         for (SpeechletEventListener listener : speechletEventListeners) {
             listener.onLaunch();

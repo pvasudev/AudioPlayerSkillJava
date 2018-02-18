@@ -71,6 +71,7 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
             dispatchProgressiveResponse(requestEnvelope.getRequest().getRequestId(), SKILL_WELCOME_RESPONSE,
                     requestEnvelope.getContext().getState(SystemInterface.class, SystemState.class));
         }
+        speechletEventManager.onInitialProgressiveDispatch();
 
         return getSpeechletResponse(playbackManager.getNextPlaybackResponse());
     }

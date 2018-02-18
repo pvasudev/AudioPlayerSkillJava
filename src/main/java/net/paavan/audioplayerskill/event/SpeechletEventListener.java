@@ -4,6 +4,7 @@ import net.paavan.audioplayerskill.settings.ContentAbstractionType;
 
 public interface SpeechletEventListener {
     void onLaunch();
+    void onInitialProgressiveDispatch();
 
     void onPause();
     void onResume();
