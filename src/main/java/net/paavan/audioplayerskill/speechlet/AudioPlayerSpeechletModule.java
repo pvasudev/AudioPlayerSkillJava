@@ -13,6 +13,7 @@ import net.paavan.audioplayerskill.source.CokeStudioIndiaMusicSource;
 import net.paavan.audioplayerskill.source.CokeStudioMusicSource;
 import net.paavan.audioplayerskill.source.MusicSourceManager;
 import net.paavan.audioplayerskill.source.S3FileListReader;
+import net.paavan.audioplayerskill.source.TheDewaristsMusicSource;
 
 /**
  * Guice initialization module for all of Audio Player Speechlet.
@@ -41,8 +42,8 @@ public class AudioPlayerSpeechletModule extends AbstractModule {
     MusicSourceManager getMusicSourceManager(final S3FileListReader s3FileListReader,
                                              final SpeechletEventManager speechletEventManager) {
         MusicSourceManager musicSourceManager = new MusicSourceManager(s3FileListReader, speechletEventManager);
-        musicSourceManager.registerMusicSource(new CokeStudioMusicSource());
-        musicSourceManager.registerMusicSource(new CokeStudioIndiaMusicSource());
+        musicSourceManager.registerMusicSource(new CokeStudioMusicSource(), new CokeStudioIndiaMusicSource(),
+                new TheDewaristsMusicSource());
         return musicSourceManager;
     }
 
