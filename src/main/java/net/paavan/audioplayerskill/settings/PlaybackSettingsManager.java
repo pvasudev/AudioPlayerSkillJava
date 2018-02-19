@@ -4,10 +4,15 @@ import lombok.Getter;
 import net.paavan.audioplayerskill.event.AbstractSpeechletEventListener;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
 
+import java.util.Collections;
+
 public class PlaybackSettingsManager {
     private static final PlaybackSettings DEFAULT_PLAYBACK_SETTINGS = PlaybackSettings.builder()
             .loop(false)
             .shuffle(true) // Shuffle is on by default
+            .contentRestriction(ContentRestriction.builder()
+                    .contentRestrictions(Collections.emptyMap())
+                    .build())
             .build();
 
     @Getter
