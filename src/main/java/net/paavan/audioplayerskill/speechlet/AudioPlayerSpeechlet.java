@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
-import net.paavan.audioplayerskill.PlaybackManager;
+import net.paavan.audioplayerskill.playback.PlaybackManager;
 import net.paavan.audioplayerskill.event.SpeechletEventListener;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
 import net.paavan.audioplayerskill.settings.ContentAbstractionType;

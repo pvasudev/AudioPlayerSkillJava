@@ -1,4 +1,4 @@
-package net.paavan.audioplayerskill;
+package net.paavan.audioplayerskill.playback;
 
 import com.amazon.speech.speechlet.interfaces.audioplayer.PlayBehavior;
 import lombok.extern.slf4j.Slf4j;
