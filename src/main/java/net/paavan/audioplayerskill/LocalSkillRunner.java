@@ -37,7 +37,7 @@ public class LocalSkillRunner {
         SpeechletRequestEnvelope<LaunchRequest> launchRequestEnvelope = getLaunchRequestSpeechletRequestEnvelope();
         SpeechletRequestEnvelope<IntentRequest> intentRequestEnvelope = getIntentRequestSpeechletRequestEnvelope();
 
-        InputStream inputStream = new ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(launchRequestEnvelope));
+        InputStream inputStream = new ByteArrayInputStream(OBJECT_MAPPER.writeValueAsBytes(intentRequestEnvelope));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         handler.handleRequest(inputStream, outputStream, null);
 
@@ -88,7 +88,7 @@ public class LocalSkillRunner {
                         .withRequestId("someRequestId")
                         .withTimestamp(new Date())
                         .withIntent(Intent.builder()
-                                .withName("PlayCokeStudioIntent")
+                                .withName("PlayTheDewaristsIntent")
                                 .build())
                         .build())
                 .build();

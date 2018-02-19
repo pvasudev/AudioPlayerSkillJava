@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import net.paavan.audioplayerskill.PlaybackManager;
 import net.paavan.audioplayerskill.PlaybackManagerImpl;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
+import net.paavan.audioplayerskill.settings.PlaybackSettingsManager;
 import net.paavan.audioplayerskill.source.CokeStudioIndiaMusicSource;
 import net.paavan.audioplayerskill.source.CokeStudioMusicSource;
 import net.paavan.audioplayerskill.source.MusicSourceManager;
@@ -39,9 +40,17 @@ public class AudioPlayerSpeechletModule extends AbstractModule {
 
     @Provides
     @Singleton
+    PlaybackSettingsManager getPlaybackSettingsManager(final SpeechletEventManager speechletEventManager) {
+        return new PlaybackSettingsManager(speechletEventManager);
+    }
+
+    @Provides
+    @Singleton
     MusicSourceManager getMusicSourceManager(final S3FileListReader s3FileListReader,
-                                             final SpeechletEventManager speechletEventManager) {
-        MusicSourceManager musicSourceManager = new MusicSourceManager(s3FileListReader, speechletEventManager);
+                                             final SpeechletEventManager speechletEventManager,
+                                             final PlaybackSettingsManager playbackSettingsManager) {
+        MusicSourceManager musicSourceManager = new MusicSourceManager(s3FileListReader, speechletEventManager,
+                playbackSettingsManager);
         musicSourceManager.registerMusicSource(new CokeStudioMusicSource(), new CokeStudioIndiaMusicSource(),
                 new TheDewaristsMusicSource());
         return musicSourceManager;

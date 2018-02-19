@@ -4,6 +4,7 @@ import com.amazon.speech.speechlet.interfaces.audioplayer.PlayBehavior;
 import lombok.extern.slf4j.Slf4j;
 import net.paavan.audioplayerskill.event.AbstractSpeechletEventListener;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
+import net.paavan.audioplayerskill.settings.ContentAbstractionType;
 import net.paavan.audioplayerskill.source.MusicSourceManager;
 
 import java.util.List;
@@ -15,13 +16,12 @@ public class PlaybackManagerImpl implements PlaybackManager {
     private final MusicSourceManager musicSourceManager;
 
     private volatile boolean shouldReturnToken;
-    private volatile Optional<String> currentlyPlayingToken;
+    private volatile Optional<String> currentlyPlayingToken = Optional.empty();
     private volatile boolean shouldReplaceCurrentlyPlaying;
 
     public PlaybackManagerImpl(final SpeechletEventManager speechletEventManager, final MusicSourceManager musicSourceManager) {
         this.musicSourceManager = musicSourceManager;
         speechletEventManager.registerSpeechletEventListener(new PlaybackManagerSpeechletEventListener());
-        currentlyPlayingToken = Optional.empty();
     }
 
     @Override
@@ -81,6 +81,12 @@ public class PlaybackManagerImpl implements PlaybackManager {
 
         @Override
         public void onNext() {
+            shouldReturnToken = true;
+            shouldReplaceCurrentlyPlaying = true;
+        }
+
+        @Override
+        public void onMusicSelectionIntent(final ContentAbstractionType contentAbstractionType, final String value) {
             shouldReturnToken = true;
             shouldReplaceCurrentlyPlaying = true;
         }

@@ -100,10 +100,13 @@ public class AudioPlayerSpeechlet implements SpeechletV2, AudioPlayer {
             case "NowPlayingIntent":
                 return getNowPlayingResponse(requestEnvelope);
             case "PlayCokeStudioIntent":
-                speechletEventManager.onMusicSelectionIntent(ContentAbstractionType.ALBUM, "CokeStudio");
+                speechletEventManager.onMusicSelectionIntent(ContentAbstractionType.ALBUM, "Coke Studio");
                 break;
             case "PlayCokeStudioIndiaIntent":
-                speechletEventManager.onMusicSelectionIntent(ContentAbstractionType.ALBUM, "CokeStudioIndia");
+                speechletEventManager.onMusicSelectionIntent(ContentAbstractionType.ALBUM, "Coke Studio @ MTV");
+                break;
+            case "PlayTheDewaristsIntent":
+                speechletEventManager.onMusicSelectionIntent(ContentAbstractionType.ALBUM, "The Dewarists");
                 break;
             default:
                 break;

@@ -2,6 +2,7 @@ package net.paavan.audioplayerskill.source;
 
 import lombok.extern.slf4j.Slf4j;
 import net.paavan.audioplayerskill.settings.ContentAbstractionType;
+import net.paavan.audioplayerskill.settings.PlaybackSettings;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +28,14 @@ public class CokeStudioMusicSource implements MusicSource {
     }
 
     @Override
-    public boolean canHandle() {
+    public boolean canHandle(final PlaybackSettings playbackSettings) {
+        if (playbackSettings.getContentRestriction().getContentRestrictions()
+                .containsKey((ContentAbstractionType.ALBUM))) {
+            String albumName = playbackSettings.getContentRestriction().getContentRestrictions()
+                    .get(ContentAbstractionType.ALBUM);
+            return albumName.equals(ALBUM_NAME);
+        }
+
         return true;
     }
 
