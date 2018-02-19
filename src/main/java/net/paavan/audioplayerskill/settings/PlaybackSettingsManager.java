@@ -1,76 +1,17 @@
 package net.paavan.audioplayerskill.settings;
 
-import lombok.Getter;
-import net.paavan.audioplayerskill.event.AbstractSpeechletEventListener;
-import net.paavan.audioplayerskill.event.SpeechletEventManager;
-
-import java.util.Collections;
-
-public class PlaybackSettingsManager {
-    private static final PlaybackSettings DEFAULT_PLAYBACK_SETTINGS = PlaybackSettings.builder()
-            .loop(false)
-            .shuffle(true) // Shuffle is on by default
-            .contentRestriction(ContentRestriction.builder()
-                    .contentRestrictions(Collections.emptyMap())
-                    .build())
-            .build();
-
-    @Getter
-    private volatile PlaybackSettings playbackSettings;
-
-    public PlaybackSettingsManager(final SpeechletEventManager speechletEventManager) {
-        speechletEventManager.registerSpeechletEventListener(new PlaybackSettingsManagerSpeechletEventListener());
-        playbackSettings = DEFAULT_PLAYBACK_SETTINGS;
-    }
-
-    // --------------
-    // Helper Methods
-
-    private class PlaybackSettingsManagerSpeechletEventListener extends AbstractSpeechletEventListener {
-        @Override
-        public void onRepeat() {
-            playbackSettings = playbackSettings.getMutableBuilder()
-                    .repeat(true)
-                    .build();
-        }
-
-//        @Override public void onStartOver() {}
-
-        @Override
-        public void onLoopOn() {
-            playbackSettings = playbackSettings.getMutableBuilder()
-                    .loop(true)
-                    .build();
-        }
-
-        @Override
-        public void onLoopOff() {
-            playbackSettings = playbackSettings.getMutableBuilder()
-                    .loop(false)
-                    .build();
-        }
-
-        @Override
-        public void onShuffleOn() {
-            playbackSettings = playbackSettings.getMutableBuilder()
-                    .shuffle(true)
-                    .build();
-        }
-
-        @Override
-        public void onShuffleOff() {
-            playbackSettings = playbackSettings.getMutableBuilder()
-                    .shuffle(false)
-                    .build();
-        }
-
-        @Override
-        public void onMusicSelectionIntent(final ContentAbstractionType contentAbstractionType, final String value) {
-            playbackSettings = playbackSettings.getMutableBuilder()
-                    .contentRestriction(ContentRestriction.builder()
-                            .contentRestriction(contentAbstractionType, value)
-                            .build())
-                    .build();
-        }
-    }
+/**
+ * A Playback Settings manager is the repository for the most up-to-date copy of the {@link PlaybackSettings} object.
+ * The Playback Settings manager listens to various speechlet events and updates the {@link PlaybackSettings} object.
+ */
+public interface PlaybackSettingsManager {
+    /**
+     * Returns the current {@link PlaybackSettings} object. The object may get stale either due to occurrence of a new
+     * speechlet event or due to other temporal and skill lifecycle events. The returned object is immutable and will
+     * not be automatically updated. The callers are encouraged to call this method to get the most current copy of the
+     * PlaybackSettings.
+     *
+     * @return the current {@link PlaybackSettings} object
+     */
+    PlaybackSettings getPlaybackSettings();
 }

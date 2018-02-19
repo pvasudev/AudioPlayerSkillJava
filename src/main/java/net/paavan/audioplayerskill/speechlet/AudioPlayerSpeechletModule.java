@@ -10,6 +10,7 @@ import net.paavan.audioplayerskill.PlaybackManager;
 import net.paavan.audioplayerskill.PlaybackManagerImpl;
 import net.paavan.audioplayerskill.event.SpeechletEventManager;
 import net.paavan.audioplayerskill.settings.PlaybackSettingsManager;
+import net.paavan.audioplayerskill.settings.PlaybackSettingsManagerImpl;
 import net.paavan.audioplayerskill.source.CokeStudioIndiaMusicSource;
 import net.paavan.audioplayerskill.source.CokeStudioMusicSource;
 import net.paavan.audioplayerskill.source.MusicSourceManager;
@@ -41,7 +42,7 @@ public class AudioPlayerSpeechletModule extends AbstractModule {
     @Provides
     @Singleton
     PlaybackSettingsManager getPlaybackSettingsManager(final SpeechletEventManager speechletEventManager) {
-        return new PlaybackSettingsManager(speechletEventManager);
+        return new PlaybackSettingsManagerImpl(speechletEventManager);
     }
 
     @Provides
