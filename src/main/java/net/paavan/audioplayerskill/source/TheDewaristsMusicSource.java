@@ -53,7 +53,7 @@ public class TheDewaristsMusicSource implements MusicSource {
 
         List<String> tokens = Arrays.asList(s3Key.split("/"));
 
-        // This assumes that Coke Studio keys are structured as follows:
+        // This assumes that The Dewarists keys are structured as follows:
         // "Songs/<AlbumName>/<SeasonName>/<SongName>"
         // All other file structures will be ignored.
         if (tokens.size() == 4 && tokens.get(1).equals(S3_ALBUM_PATH) && tokens.get(3).endsWith(".mp3")) {
